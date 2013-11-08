@@ -1,0 +1,59 @@
+########################################################
+# Syntax Coloring Map For My Arduino Framework ( MAF )
+########################################################
+
+########################################################
+# Datatypes (KEYWORD1)
+########################################################
+
+########################################################
+# Methods and Functions (KEYWORD2)
+########################################################
+
+
+#Logger
+
+FATAL	KEYWORD2
+CRITICAL	KEYWORD2
+ERROR	KEYWORD2
+WARNING	KEYWORD2
+INFO	KEYWORD2
+DEBUG	KEYWORD2
+DEEP	KEYWORD2
+TRACE	KEYWORD2
+
+SetLogLevel	KEYWORD2
+GetLogLevel	KEYWORD2
+
+#Macros
+
+DO_EVERY	KEYWORD2
+DO_EVERY_MICRO	KEYWORD2
+DO_EVERY_SHIFT	KEYWORD2
+DO_EVERY_MICRO_SHIFT	KEYWORD2
+DO_EVERY_T	KEYWORD2
+DO_EVERY_MICRO_T	KEYWORD2
+DO_EVERY_SHIFT_T	KEYWORD2
+DO_EVERY_MICRO_SHIFT_T	KEYWORD2
+
+
+########################################################
+# Instances (KEYWORD2)
+########################################################
+
+########################################################
+# Constants (LITERAL1)
+########################################################
+
+#Logger
+
+eOFF	LITERAL1
+eFATAL	LITERAL1
+eCRITICAL	LITERAL1
+eERROR	LITERAL1
+eWARNING	LITERAL1
+eINFO	LITERAL1
+eDEBUG	LITERAL1
+eDEEP	LITERAL1
+eTRACE	LITERAL1
+
