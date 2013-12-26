@@ -141,4 +141,24 @@ namespace Logger
 	// Raw logger write message
 	//
 	int Write( uint8_t level, const char * module, const char * fmt, ... );
+
+	//
+	// if logger was disabled or undeclared ATTACH_LOGGER_TO_SERIAL should be empty;
+	//
+	#if LOG_LEVEL >= eFATAL
+		//
+		// Create a output function for redirect logger to UART
+		// This works because Serial.write, although of
+		// type virtual, already exists.
+		//
+		static int uart_putchar( char c, FILE * stream )
+		{
+		  Serial.write(c) ;
+		  return 0 ;
+		}
+
+		#define ATTACH_LOGGER_TO_SERIAL fdev_setup_stream( &Logger::FileHandler, Logger::uart_putchar, NULL, _FDEV_SETUP_WRITE )
+	#else
+		#define ATTACH_LOGGER_TO_SERIAL
+	#endif
 }
