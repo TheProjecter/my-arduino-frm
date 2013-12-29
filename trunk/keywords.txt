@@ -5,11 +5,14 @@
 ########################################################
 # Datatypes (KEYWORD1)
 ########################################################
-
+Limits	KEYWORD1
+Interrupts	KEYWORD1
+External	KEYWORD1
+Extender	KEYWORD1
+IInterrupt	KEYWORD1
 ########################################################
 # Methods and Functions (KEYWORD2)
 ########################################################
-
 
 #Logger
 
@@ -36,6 +39,22 @@ DO_EVERY_MICRO_T	KEYWORD2
 DO_EVERY_SHIFT_T	KEYWORD2
 DO_EVERY_MICRO_SHIFT_T	KEYWORD2
 
+#Interrupts
+
+Throw	KEYWORD2
+GetMask	KEYWORD2
+GetPins	KEYWORD2
+GetSize	KEYWORD2
+IsEnabled	KEYWORD2
+Enable	KEYWORD2
+Disable	KEYWORD2
+IsOnRising	KEYWORD2
+OnRising	KEYWORD2
+IsOnFalling	KEYWORD2
+OnFalling	KEYWORD2
+Attach	KEYWORD2
+Detach	KEYWORD2
+Handle	KEYWORD2
 
 ########################################################
 # Instances (KEYWORD2)
