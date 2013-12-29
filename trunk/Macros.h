@@ -34,27 +34,30 @@
 
 */
 
-#define DO_EVERY( interval, action )									DO_EVERY_TMPL( uint16_t, millis(), interval, 0, action )
-#define DO_EVERY_MICRO( interval, action )								DO_EVERY_TMPL( uint16_t, micros(), interval, 0, action )
+namespace Common
+{
+	#define DO_EVERY( interval, action )									DO_EVERY_TMPL( uint16_t, millis(), interval, 0, action )
+	#define DO_EVERY_MICRO( interval, action )								DO_EVERY_TMPL( uint16_t, micros(), interval, 0, action )
 
-#define DO_EVERY_SHIFT( interval, shift, action )						DO_EVERY_TMPL( uint16_t, millis(), interval, shift, action )
-#define DO_EVERY_MICRO_SHIFT( interval, shift, action )					DO_EVERY_TMPL( uint16_t, micros(), interval, shift, action )
+	#define DO_EVERY_SHIFT( interval, shift, action )						DO_EVERY_TMPL( uint16_t, millis(), interval, shift, action )
+	#define DO_EVERY_MICRO_SHIFT( interval, shift, action )					DO_EVERY_TMPL( uint16_t, micros(), interval, shift, action )
 
-#define DO_EVERY_T( time_type, interval, action )						DO_EVERY_TMPL( time_type, millis(), interval, 0, action )
-#define DO_EVERY_MICRO_T( time_type, interval, action )					DO_EVERY_TMPL( time_type, micros(), interval, 0, action )
+	#define DO_EVERY_T( time_type, interval, action )						DO_EVERY_TMPL( time_type, millis(), interval, 0, action )
+	#define DO_EVERY_MICRO_T( time_type, interval, action )					DO_EVERY_TMPL( time_type, micros(), interval, 0, action )
 
-#define DO_EVERY_SHIFT_T( time_type, interval, shift, action )			DO_EVERY_TMPL( time_type, millis(), interval, shift, action )
-#define DO_EVERY_MICRO_SHIFT_T( time_type, interval, shift, action )	DO_EVERY_TMPL( time_type, micros(), interval, shift, action )
+	#define DO_EVERY_SHIFT_T( time_type, interval, shift, action )			DO_EVERY_TMPL( time_type, millis(), interval, shift, action )
+	#define DO_EVERY_MICRO_SHIFT_T( time_type, interval, shift, action )	DO_EVERY_TMPL( time_type, micros(), interval, shift, action )
 
-#define DO_EVERY_TMPL( time_type, time_fn, interval, shift, action )									\
-{																										\
-	static	time_type __lastHandleTime	= time_type ( time_fn ) - time_type ( interval + 1 ) + shift;	\
-			time_type __nowHandleTime	= time_type ( time_fn );										\
-																										\
-			if( __nowHandleTime - __lastHandleTime > interval )											\
-			{																							\
-				__lastHandleTime = __nowHandleTime;														\
-				action;																					\
-			}																							\
+	#define DO_EVERY_TMPL( time_type, time_fn, interval, shift, action )									\
+	{																										\
+		static	time_type __lastHandleTime	= time_type ( time_fn ) - time_type ( interval + 1 ) + shift;	\
+				time_type __nowHandleTime	= time_type ( time_fn );										\
+																											\
+				if( __nowHandleTime - __lastHandleTime > interval )											\
+				{																							\
+					__lastHandleTime = __nowHandleTime;														\
+					action;																					\
+				}																							\
+	}
 }
 

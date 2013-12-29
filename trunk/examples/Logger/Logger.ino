@@ -7,21 +7,10 @@
 #include "Logger.h"
 
 
-//
-// Create a output function for redirect logger to UART
-// This works because Serial.write, although of
-// type virtual, already exists.
-//
-static int uart_putchar (char c, FILE *stream)
-{
-  Serial.write(c) ;
-  return 0 ;
-}
-
 void setup()
 {
   Serial.begin( 9600 );
-  fdev_setup_stream( &Logger::FileHandler, uart_putchar, NULL, _FDEV_SETUP_WRITE );
+  ATTACH_LOGGER_TO_SERIAL();
 }
 
 void loop()
