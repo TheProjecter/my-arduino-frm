@@ -29,6 +29,7 @@
 
 	Changelog:
 
+		2013-12-26	Added Serial attach mechanism
 		2013-11-06	Initial version
 
 */
@@ -157,8 +158,8 @@ namespace Logger
 		  return 0 ;
 		}
 
-		#define ATTACH_LOGGER_TO_SERIAL fdev_setup_stream( &Logger::FileHandler, Logger::uart_putchar, NULL, _FDEV_SETUP_WRITE )
+		#define ATTACH_LOGGER_TO_SERIAL() fdev_setup_stream( &Logger::FileHandler, Logger::uart_putchar, NULL, _FDEV_SETUP_WRITE )
 	#else
-		#define ATTACH_LOGGER_TO_SERIAL
+		#define ATTACH_LOGGER_TO_SERIAL()
 	#endif
 }
