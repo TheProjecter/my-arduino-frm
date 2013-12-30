@@ -28,7 +28,16 @@
 
 	Changelog:
 
-		2013-12-28	Initial version
+		2013-12-30	Initial version
+
+
+	Usage:
+		Connect 4 buttons to 8,9,10,11 pins
+
+	Action:
+		Button on pin  8 or 11	: Led on pin 13 should invert state on press & release events
+		Button on pin  9		: Led on pin 13 should invert state only on press events
+		Button on pin 10		: Led on pin 13 should invert state only on release events
 
 */
 
@@ -78,10 +87,10 @@ void setup()
 {
 	pinMode( 13, OUTPUT );
 
-	iExtender.Attach( new ExternalInterruptDemo(), 0, true, true );
-	iExtender.Attach( new ExternalInterruptDemo(), 1, true, false );
-	iExtender.Attach( new ExternalInterruptDemo(), 2, false, true );
-	iExtender.Attach( new ExternalInterruptDemo(), 3, true, true );
+	iExtender.Attach( new ExternalInterruptDemo(), 0, true, true );		// Pin 8
+	iExtender.Attach( new ExternalInterruptDemo(), 1, true, false );	// Pin 9
+	iExtender.Attach( new ExternalInterruptDemo(), 2, false, true );	// Pin 10
+	iExtender.Attach( new ExternalInterruptDemo(), 3, true, true );		// Pin 11
 
 	iExtender.Enable();
 }

@@ -115,7 +115,7 @@ namespace Interrupts
 				//
 				public:
 					Extender( index_type port ) 
-						: _LastValue( 0 ), _OnRising( 0 ), _OnFalling( 0 ), _Port( 1 << port )
+						: _LastValue( 0 ), _OnRising( 0 ), _OnFalling( 0 ), _Port( port )
 					{
 						for( int i = 0; i < sizeof( pins_type ) << 3; ++i )
 							this->_Interrupts[ i ] = NULL;
@@ -146,15 +146,15 @@ namespace Interrupts
 				//
 				public:
 					inline bool IsEnabled() {
-						return PCICR & this->_Port;
+						return PCICR & ( 1 << this->_Port );
 					}
 
 					inline bool Enable() {
-						return PCICR |= this->_Port;
+						return PCICR |= ( 1 << this->_Port );
 					}
 
 					inline bool Disable() {
-						return PCICR &= ~this->_Port;
+						return PCICR &= ~( 1 << this->_Port );
 					}
 
 
