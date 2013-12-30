@@ -32,27 +32,63 @@
 
 */
 
-#include "Macros.h"
+#include <InterruptsExternalExtender.h>
 
-#define ledPin 13
-
-void setup()
+//
+// User defined external interrup class
+//
+//		This class should implement method 
+//			- void Throw( int n, bool status ) 
+//
+//	Notice !!! This library include virtual interface IInterrupt. 
+//				if you want to use different classes with one extender, 
+//				you can inherit your classes from this interface 
+//				and implement interface in your classes 
+//
+class ExternalInterruptDemo
 {
-  Serial.begin( 9600 );
-  pinMode( ledPin, OUTPUT );
+	public:
+		ExternalInterruptDemo()
+		{
+			;
+		}
+
+	public:
+		void Throw( int n, bool status ) {
+			digitalWrite( 13, !digitalRead( 13 ) );
+		}
+};
+
+//
+// Declaration new external interrup extender on PORTD
+//
+Interrupts::External::Extender<ExternalInterruptDemo> iExtender( PCIE0 );
+
+//
+// Interrupt Handling
+//
+ISR( PCINT0_vect ) {
+	iExtender.Handle();
+};
+
+//
+// 
+//
+void setup() 
+{
+	pinMode( 13, OUTPUT );
+
+	iExtender.Attach( new ExternalInterruptDemo(), 0, true, true );
+	iExtender.Attach( new ExternalInterruptDemo(), 1, true, false );
+	iExtender.Attach( new ExternalInterruptDemo(), 2, false, true );
+	iExtender.Attach( new ExternalInterruptDemo(), 3, true, true );
+
+	iExtender.Enable();
 }
 
+//
+// 
+//
 void loop()
 {
-  DO_EVERY_MICRO( 25000, digitalWrite( ledPin, !digitalRead( ledPin ) ) );
-  
-  DO_EVERY( 1000, 
-    Serial.print( "Action every 1000 ms. Readed = " );
-    Serial.println( digitalRead( ledPin ) ) 
-  );
-  
-  DO_EVERY( 5000, 
-    Serial.print( "Action every 5000 ms. Readed  = " );
-    Serial.println( digitalRead( ledPin ) ) 
-  );
 }

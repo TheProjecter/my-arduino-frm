@@ -1,5 +1,7 @@
+#pragma once
+
 /*
-	InterruptsExternalExtender.h - Macros library for Simple Arduino Framework
+	Limits.h - Macros library for Simple Arduino Framework
 	Copyright (c) 2013 Gregory Linschitz.  All right reserved.
 
 	This library is free software; you can redistribute it and/or
@@ -32,27 +34,27 @@
 
 */
 
-#include "Macros.h"
-
-#define ledPin 13
-
-void setup()
+namespace Common
 {
-  Serial.begin( 9600 );
-  pinMode( ledPin, OUTPUT );
-}
+	class Limits
+	{
+		public:
+			inline static int8_t	Min( int8_t value )		{ return 0x80;			}
+			inline static int16_t	Min( int16_t value )	{ return 0x8000;		}	
+			inline static int32_t	Min( int32_t value )	{ return 0x80000000;	}
 
-void loop()
-{
-  DO_EVERY_MICRO( 25000, digitalWrite( ledPin, !digitalRead( ledPin ) ) );
-  
-  DO_EVERY( 1000, 
-    Serial.print( "Action every 1000 ms. Readed = " );
-    Serial.println( digitalRead( ledPin ) ) 
-  );
-  
-  DO_EVERY( 5000, 
-    Serial.print( "Action every 5000 ms. Readed  = " );
-    Serial.println( digitalRead( ledPin ) ) 
-  );
+			inline static uint8_t	Min( uint8_t value )	{ return 0;				}
+			inline static uint16_t	Min( uint16_t value )	{ return 0;				}
+			inline static uint32_t	Min( uint32_t value )	{ return 0;				}
+
+		public:
+			inline static int8_t	Max( int8_t value )		{ return 0x7F;			}
+			inline static int16_t	Max( int16_t value )	{ return 0x7FFF;		}	
+			inline static int32_t	Max( int32_t value )	{ return 0x7FFFFFFF;	}
+
+			inline static uint8_t	Max( uint8_t value )	{ return 0xFF;			}
+			inline static uint16_t	Max( uint16_t value )	{ return 0xFFFF;		}
+			inline static uint32_t	Max( uint32_t value )	{ return 0xFFFFFFFF;	}
+
+	};
 }
