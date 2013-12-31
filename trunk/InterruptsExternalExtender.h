@@ -149,10 +149,12 @@ namespace Interrupts
 						return PCICR & ( 1 << this->_Port );
 					}
 
+				public:
 					inline bool Enable() {
 						return PCICR |= ( 1 << this->_Port );
 					}
 
+				public:
 					inline bool Disable() {
 						return PCICR &= ~( 1 << this->_Port );
 					}
@@ -170,6 +172,7 @@ namespace Interrupts
 						return this->GetMask() & ( 1 << index );
 					}
 
+				public:
 					inline bool Enable( index_type index )
 					{
 						if( index >= this->GetSize() )
@@ -181,6 +184,7 @@ namespace Interrupts
 						this->GetMask() |= 1 << index;
 					}
 
+				public:
 					inline bool Disable( index_type index )
 					{
 						if( index >= this->GetSize() )
@@ -201,6 +205,7 @@ namespace Interrupts
 						return this->_OnRising & ( 1 << index );
 					}
 
+				public:
 					inline bool OnRising( index_type index, bool state )
 					{
 						if( index >= this->GetSize() )
@@ -283,6 +288,7 @@ namespace Interrupts
 						
 					}
 
+				public:
 					bool Detach( index_type index )
 					{
 						if( index >= this->GetSize() )
@@ -306,49 +312,107 @@ namespace Interrupts
 					}
 
 				//
-				// Interrupt handler
+				// Interrupt handler ( this is regular handler, it's very slow )
 				//
-				void Handle()
-				{
-					pins_type pins = *( this->_Pins );
-
-					if( pins != this->_LastValue )
+				public:
+					void HandleMultipleInterrupts( register pins_type pins, register pins_type changes )
 					{
-						mask_type		mask		= this->GetMask();
-						condition_type	onRising	= this->_OnRising;
-						condition_type	onFalling	= this->_OnFalling;
+						register condition_type onRising	= this->_OnRising;									// get rising codition
+						register condition_type onFalling	= this->_OnFalling;									// get falling codition
 
-						for( int i = 0; i < this->GetSize(); ++i )
-						{
-							mask_type bit = 1 << i;
-					
-							if( mask & bit ) // if interrupt enabled
+						if( changes ) // if we have chages, otherwize it's a fake interrupt
+							for( register int i = 0; i < this->GetSize(); ++i ) // run bits loop 
 							{
-								pins_type value	= pins & bit;
+								register mask_type bit = 1 << i; // calculate mask for current bit
 
-								if( value != ( this->_LastValue & bit ) ) // if value changed
-									if( value )
+								if( changes & bit ) // if bit has changed
+								{
+									register pins_type value = pins & bit; // calculate current value of this bit
+
+									if( value ) // if rising, otherwize it's a falling
 									{
-										if( onRising & bit ) // check rising condition is true
+										if( onRising & bit ) // check rising condition 
 										{
-											T * interrupt = this->_Interrupts[ i ];
+											register T * interrupt = this->_Interrupts[ i ];
 											if( interrupt )
 												interrupt->Throw( i, !!value );
 										}
 									}
 									else
-										if( onFalling & bit ) // check rising condition is true
+										if( onFalling & bit ) // check rising condition
 										{
-											T * interrupt = this->_Interrupts[ i ];
+											register T * interrupt = this->_Interrupts[ i ];
+										
 											if( interrupt )
 												interrupt->Throw( i, !!value );
 										}
+								}
 							}
+					}
+
+				//
+				// Get bit number, return number of bit or 0xFF
+				//
+				private:
+					inline index_type GetBitNumber( mask_type data )
+					{
+						switch( data )
+						{
+							case 0x01: return 0;
+							case 0x02: return 1;
+							case 0x04: return 2;
+							case 0x08: return 3;
+							case 0x10: return 4;
+							case 0x20: return 5;
+							case 0x40: return 6;
+							case 0x80: return 7;
+							default:
+								return 0xFF;
+						}
+					}
+				
+				//
+				// Interrupt handler ( it's a optimized handler - fast version )
+				//
+				public:
+					void Handle()
+					{
+						register pins_type pins		= *( this->_Pins );
+						register pins_type changes	= ( pins ^ this->_LastValue ) & this->GetMask();
+
+						if( changes )
+						{
+							register index_type n = this->GetBitNumber( changes );
+
+							if( n != 0xFF )
+							{
+								register pins_type value = pins & changes;
+
+								if( value )
+								{
+									if( this->_OnRising & changes ) // check rising condition is true
+									{
+										register T * interrupt = this->_Interrupts[ n ];
+
+										if( interrupt )
+											interrupt->Throw( n, !!value );
+									}
+								}
+								else
+									if( this->_OnFalling & changes ) // check rising condition is true
+									{
+										register T * interrupt = this->_Interrupts[ n ];
+										
+										if( interrupt )
+											interrupt->Throw( n, !!value );
+									}
+							}
+							else
+								this->HandleMultipleInterrupts( pins, changes );
 						}
 
 						this->_LastValue = pins;
 					}
-				}
 			};
 	}
 }
