@@ -312,45 +312,6 @@ namespace Interrupts
 					}
 
 				//
-				// Interrupt handler ( this is regular handler, it's very slow )
-				//
-				public:
-					void HandleMultipleInterrupts( register pins_type pins, register pins_type changes )
-					{
-						register condition_type onRising	= this->_OnRising;									// get rising codition
-						register condition_type onFalling	= this->_OnFalling;									// get falling codition
-
-						if( changes ) // if we have chages, otherwize it's a fake interrupt
-							for( register int i = 0; i < this->GetSize(); ++i ) // run bits loop 
-							{
-								register mask_type bit = 1 << i; // calculate mask for current bit
-
-								if( changes & bit ) // if bit has changed
-								{
-									register pins_type value = pins & bit; // calculate current value of this bit
-
-									if( value ) // if rising, otherwize it's a falling
-									{
-										if( onRising & bit ) // check rising condition 
-										{
-											register T * interrupt = this->_Interrupts[ i ];
-											if( interrupt )
-												interrupt->Throw( i, !!value );
-										}
-									}
-									else
-										if( onFalling & bit ) // check rising condition
-										{
-											register T * interrupt = this->_Interrupts[ i ];
-										
-											if( interrupt )
-												interrupt->Throw( i, !!value );
-										}
-								}
-							}
-					}
-
-				//
 				// Get bit number, return number of bit or 0xFF
 				//
 				private:
@@ -372,6 +333,48 @@ namespace Interrupts
 					}
 				
 				//
+				// Get bit number, return number of bit or 0xFF
+				//
+				public:
+					inline void CallUserInterruptHandler( register index_type n, register bool value )
+					{
+						register T * interrupt = this->_Interrupts[ n ];
+										
+						if( interrupt )
+							interrupt->Throw( n, value );
+					}
+
+				//
+				// Interrupt handler ( this is regular handler, it's very slow )
+				//
+				public:
+					void HandleMultipleInterrupts( register pins_type pins, register pins_type changes )
+					{
+						register condition_type onRising	= this->_OnRising;	// get rising codition
+						register condition_type onFalling	= this->_OnFalling;	// get falling codition
+
+						if( changes ) // if we have chages, otherwize it's a fake interrupt
+							for( register index_type i = 0; i < this->GetSize(); ++i ) // run bits loop 
+							{
+								register mask_type bit = 1 << i; // calculate mask for current bit
+
+								if( changes & bit ) // if bit has changed
+								{
+									register bool value = !!( pins & bit ); // calculate current value of this bit
+
+									if( value ) // if rising, otherwize it's a falling
+									{
+										if( onRising & bit ) // check rising condition
+											this->CallUserInterruptHandler( i, value );
+									}
+									else
+										if( onFalling & bit ) // check rising condition
+											this->CallUserInterruptHandler( i, value );
+								}
+							}
+					}
+
+				//
 				// Interrupt handler ( it's a optimized handler - fast version )
 				//
 				public:
@@ -386,26 +389,16 @@ namespace Interrupts
 
 							if( n != 0xFF )
 							{
-								register pins_type value = pins & changes;
+								register bool value = pins & changes;
 
 								if( value )
 								{
 									if( this->_OnRising & changes ) // check rising condition is true
-									{
-										register T * interrupt = this->_Interrupts[ n ];
-
-										if( interrupt )
-											interrupt->Throw( n, !!value );
-									}
+										this->CallUserInterruptHandler( n, value );
 								}
 								else
 									if( this->_OnFalling & changes ) // check rising condition is true
-									{
-										register T * interrupt = this->_Interrupts[ n ];
-										
-										if( interrupt )
-											interrupt->Throw( n, !!value );
-									}
+										this->CallUserInterruptHandler( n, value );
 							}
 							else
 								this->HandleMultipleInterrupts( pins, changes );
