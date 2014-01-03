@@ -29,6 +29,7 @@
 
 	Changelog:
 
+		2014-01-01	Added Binnary format defines 
 		2013-12-26	Added Serial attach mechanism
 		2013-11-06	Initial version
 
@@ -57,6 +58,12 @@ namespace Logger
 	#define eDEEP		0x07
 	#define eTRACE		0x08
 
+	//
+	// Helpers
+	//
+	#define BYTE_TO_BIN_FMT			"%d%d%d%d%d%d%d%d"
+	#define BYTE_TO_BIN( n )		!!( n & 0x80 ), !!( n & 0x40 ), !!( n & 0x20 ), !!( n & 0x10 ), \
+									!!( n & 0x08 ), !!( n & 0x04 ), !!( n & 0x02 ), !!( n & 0x01 ) 
 	//
 	// Disable logger if LOG_LEVEL not defined
 	//
