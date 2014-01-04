@@ -34,6 +34,13 @@
 
 */
 
+#if ARDUINO < 100
+  #include <WProgram.h>
+#else
+  #include <Arduino.h>
+#endif
+
+
 namespace Common
 {
 	class Limits
@@ -43,15 +50,17 @@ namespace Common
 			inline static int16_t	Min( int16_t value )	{ return 0x8000;		}	
 			inline static int32_t	Min( int32_t value )	{ return 0x80000000;	}
 
-			inline static uint8_t	Min( uint8_t value )	{ return 0;				}
-			inline static uint16_t	Min( uint16_t value )	{ return 0;				}
-			inline static uint32_t	Min( uint32_t value )	{ return 0;				}
-
 		public:
 			inline static int8_t	Max( int8_t value )		{ return 0x7F;			}
 			inline static int16_t	Max( int16_t value )	{ return 0x7FFF;		}	
 			inline static int32_t	Max( int32_t value )	{ return 0x7FFFFFFF;	}
 
+		public:
+			inline static uint8_t	Min( uint8_t value )	{ return 0;				}
+			inline static uint16_t	Min( uint16_t value )	{ return 0;				}
+			inline static uint32_t	Min( uint32_t value )	{ return 0;				}
+
+		public:
 			inline static uint8_t	Max( uint8_t value )	{ return 0xFF;			}
 			inline static uint16_t	Max( uint16_t value )	{ return 0xFFFF;		}
 			inline static uint32_t	Max( uint32_t value )	{ return 0xFFFFFFFF;	}
