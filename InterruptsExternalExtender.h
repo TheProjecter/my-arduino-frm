@@ -418,10 +418,6 @@ namespace Interrupts
 
 						if( changes )
 						{
-							HandleMultipleInterrupts( pins, changes ); 
-							this->_LastValue = pins;
-							return;
-
 							register index_type index = this->GetBitNumber( changes );
 
 							if( index != 0xFF )
