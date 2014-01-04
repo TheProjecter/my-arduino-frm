@@ -83,8 +83,8 @@ namespace Logger
 		// Write header
 		//
 		int header_len = 
-			fprintf( &FileHandler, 
-						"%2d:%02d:%02d.%03u | %8s | %8s | ", 
+			fprintf_P( &FileHandler, 
+						PSTR( "%2d:%02d:%02d.%03u | %8s | %8s | " ), 
 						( uint8_t ) ( timeStamp / 1000 / 60 / 60 ) % 24, 
 						( uint8_t ) ( timeStamp / 1000 / 60 ) % 60,
 						( uint8_t ) ( timeStamp / 1000 ) % 60, 
@@ -106,7 +106,7 @@ namespace Logger
 		//
 		// Write endl
 		//
-		int endl_len = fprintf( &FileHandler, "\r\n" );
+		int endl_len = fprintf_P( &FileHandler, PSTR( "\r\n" ) );
 
 		if( endl_len < 0 )
 			return msg_len;
