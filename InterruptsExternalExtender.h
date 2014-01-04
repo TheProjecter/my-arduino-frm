@@ -30,6 +30,9 @@
 
 	Changelog:
 
+		2014-01-04	Added pin direction change on attach procedure 
+					Additional small optimization in handling mechanism
+
 		2013-12-28	Initial version
 
 */
@@ -70,13 +73,13 @@ namespace Interrupts
 					typedef uint8_t		size_type;
 
 				//
-				//
+				// Last detected value of pins state
 				//
 				private:
 					pins_type					_LastValue;
 
 				//
-				//
+				// Port & Mask & Pins registers
 				//
 				private:
 					const index_type			_Port;
@@ -84,26 +87,27 @@ namespace Interrupts
 					volatile pins_type *		_Pins;
 
 				//
-				//
+				// Get Mask & Pins methods
 				//
 				private:
 					inline volatile mask_type &	GetMask() { return *( this->_Mask ); }
 					inline volatile mask_type &	GetPins() { return *( this->_Pins ); }
+
 				//
-				//
+				// Rising & Falling states
 				//
 				private:
 					volatile condition_type		_OnRising;
 					volatile condition_type		_OnFalling;
 
 				//
-				//
+				// User interrupts handler collection
 				//
 				public: // TODO : return to private
 					T * volatile				_Interrupts[ sizeof( pins_type ) << 3 ]; 
 
 				//
-				//
+				// Size of user interrupts handler collection
 				//
 				public:
 					static inline size_type GetSize() { 
@@ -111,7 +115,7 @@ namespace Interrupts
 					}
 
 				//
-				//
+				// Constructor
 				//
 				public:
 					Extender( index_type port ) 
@@ -243,7 +247,7 @@ namespace Interrupts
 				// Attach/Detach interrupt
 				//
 				public:
-					bool Attach( T * interrupt, index_type index, bool onRising, bool onFalling, bool enable = true )
+					bool Attach( T * interrupt, index_type index, bool onRising = true, bool onFalling = true, bool enable = true )
 					{
 						if( index >= this->GetSize() )
 							return false;
@@ -259,7 +263,8 @@ namespace Interrupts
 						//
 						// 1. Set interrupt object
 						// 2. Set OnFalling & OnRising state
-						// 3. Set interrupt mask
+						// 3. Set direction bit
+						// 4. Set interrupt mask
 						//
 
 						// 
@@ -268,19 +273,44 @@ namespace Interrupts
 
 						// cli();
 
+						// Set interrupt object
 						this->_Interrupts[ index ] = interrupt;
 
+						// Set onFalling flags
 						if( onFalling )
 							this->_OnFalling |= bit;
 						else
 							this->_OnFalling &= ~bit;
 
+						// Set onRising flags
 						if( onRising )
 							this->_OnRising |= bit;
 						else
 							this->_OnRising &= ~bit;
 
-						this->GetMask() |= bit;
+						// Set direction
+						switch( this->_Port )
+						{
+							case PCIE0:
+								DDRB &= ~bit;
+								break;
+
+							case PCIE1:
+								DDRC &= ~bit;
+								break;
+
+							case PCIE2:
+								DDRD &= ~bit;
+								break;
+
+							default:
+								// error;
+								break;
+						}
+
+						// Set mask
+						if( enable )
+							this->GetMask() |= bit;
 
 						// sei(); 
 						
@@ -345,7 +375,8 @@ namespace Interrupts
 					}
 
 				//
-				// Interrupt handler ( this is regular handler, it's very slow )
+				// Multiple Interrupt handler
+				//		- this is regular handler, will be called if changes has detected on two or more pins
 				//
 				public:
 					void HandleMultipleInterrupts( register pins_type pins, register pins_type changes )
@@ -375,7 +406,9 @@ namespace Interrupts
 					}
 
 				//
-				// Interrupt handler ( it's a optimized handler - fast version )
+				// Single Interrupt handler 
+				//		-	it's a optimized handler - this handler will be called first, 
+				//			and if has detect change on two or more pins will be called  Multiple Interrupt handler
 				//
 				public:
 					void Handle()
@@ -385,20 +418,24 @@ namespace Interrupts
 
 						if( changes )
 						{
-							register index_type n = this->GetBitNumber( changes );
+							HandleMultipleInterrupts( pins, changes ); 
+							this->_LastValue = pins;
+							return;
 
-							if( n != 0xFF )
+							register index_type index = this->GetBitNumber( changes );
+
+							if( index != 0xFF )
 							{
 								register bool value = pins & changes;
 
 								if( value )
 								{
 									if( this->_OnRising & changes ) // check rising condition is true
-										this->CallUserInterruptHandler( n, value );
+										this->CallUserInterruptHandler( index, value );
 								}
 								else
 									if( this->_OnFalling & changes ) // check rising condition is true
-										this->CallUserInterruptHandler( n, value );
+										this->CallUserInterruptHandler( index, value );
 							}
 							else
 								this->HandleMultipleInterrupts( pins, changes );
