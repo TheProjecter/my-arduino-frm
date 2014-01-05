@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-	InterruptsExternalExtender.h - Macros library for Simple Arduino Framework
+	InterruptsExternalExtender.h - External interrupts library for Simple Arduino Framework
 	Copyright (c) 2013 Gregory Linschitz.  All right reserved.
 
 	This library is free software; you can redistribute it and/or
