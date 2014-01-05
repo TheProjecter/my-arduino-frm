@@ -50,15 +50,6 @@ namespace Interrupts
 		//
 		//
 		//
-		class IInterrupt
-		{
-			public:
-				virtual void Throw( int n, bool state ) = 0;
-		};
-
-		//
-		//
-		//
 		template<typename T>
 			class Extender
 			{
