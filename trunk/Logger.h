@@ -29,6 +29,7 @@
 
 	Changelog:
 
+		2014-01-08	Adedd INIT_SERIAL_AND_ATTACH_LOGGER & LOG_EMPTY_LINE
 		2014-01-01	Added Binnary format defines 
 		2013-12-26	Added Serial attach mechanism
 		2013-11-06	Initial version
@@ -49,21 +50,31 @@ namespace Logger
 	// Logger levels section
 	//
 	#define eOFF		0x00
-	#define eFATAL		0x01
-	#define eCRITICAL	0x02
-	#define eERROR		0x03
-	#define eWARNING	0x04
-	#define eINFO		0x05
-	#define eDEBUG		0x06
-	#define eDEEP		0x07
-	#define eTRACE		0x08
+	#define eEMPTY		0x01
+	#define eFATAL		0x02
+	#define eCRITICAL	0x03
+	#define eERROR		0x04
+	#define eWARNING	0x05
+	#define eINFO		0x06
+	#define eDEBUG		0x07
+	#define eDEEP		0x08
+	#define eTRACE		0x09
 
 	//
 	// Helpers
 	//
 	#define BYTE_TO_BIN_FMT			"%d%d%d%d%d%d%d%d"
-	#define BYTE_TO_BIN( n )		!!( n & 0x80 ), !!( n & 0x40 ), !!( n & 0x20 ), !!( n & 0x10 ), \
-									!!( n & 0x08 ), !!( n & 0x04 ), !!( n & 0x02 ), !!( n & 0x01 ) 
+	#define BYTE_TO_BIN( n )		!!( (n) & 0x80 ), !!( (n) & 0x40 ), !!( (n) & 0x20 ), !!( (n) & 0x10 ), \
+									!!( (n) & 0x08 ), !!( (n) & 0x04 ), !!( (n) & 0x02 ), !!( (n) & 0x01 ) 
+
+	#define WORD_TO_BIN_FMT			BYTE_TO_BIN_FMT " " BYTE_TO_BIN_FMT
+	#define WORD_TO_BIN( n )		BYTE_TO_BIN( ( (n) >> 8 ) & 0xFF ), BYTE_TO_BIN( (n) & 0xFF )
+
+
+	#define DWORD_TO_BIN_FMT		WORD_TO_BIN_FMT " " WORD_TO_BIN_FMT
+	#define DWORD_TO_BIN( n )		WORD_TO_BIN( ( (n) >> 16 ) & 0xFFFF ), BYTE_TO_BIN( (n) & 0xFFFF )
+
+
 	//
 	// Disable logger if LOG_LEVEL not defined
 	//
@@ -81,6 +92,12 @@ namespace Logger
 	//
 	// Set logger interfaces
 	//
+	#if LOG_LEVEL >= eEMPTY
+		#define LOG_EMPTY_LINE()		Logger::Write( eEMPTY, LOG_MODULE, "" )
+	#else
+		#define LOG_EMPTY_LINE()
+	#endif
+
 	#if LOG_LEVEL >= eFATAL
 		#define FATAL( ... )			Logger::Write( eFATAL, LOG_MODULE, __VA_ARGS__ )
 	#else
@@ -148,7 +165,7 @@ namespace Logger
 	//
 	// Raw logger write message
 	//
-	int Write( uint8_t level, const char * module, const char * fmt, ... );
+	extern int Write( uint8_t level, const char * module, const char * fmt, ... );
 
 	//
 	// if logger was disabled or undeclared ATTACH_LOGGER_TO_SERIAL should be empty;
@@ -165,8 +182,10 @@ namespace Logger
 		  return 0 ;
 		}
 
-		#define ATTACH_LOGGER_TO_SERIAL() fdev_setup_stream( &Logger::FileHandler, Logger::uart_putchar, NULL, _FDEV_SETUP_WRITE )
+		#define ATTACH_LOGGER_TO_SERIAL()				fdev_setup_stream( &Logger::FileHandler, Logger::uart_putchar, NULL, _FDEV_SETUP_WRITE )
+		#define INIT_SERIAL_AND_ATTACH_LOGGER( boud )	{ Serial.begin( boud ); ATTACH_LOGGER_TO_SERIAL(); }
 	#else
 		#define ATTACH_LOGGER_TO_SERIAL()
+		#define INIT_SERIAL_AND_ATTACH_LOGGER( boud )
 	#endif
 }
