@@ -10,9 +10,14 @@ Interrupts	KEYWORD1
 External	KEYWORD1
 Extender	KEYWORD1
 IInterrupt	KEYWORD1
+Limits	KEYWORD1
 ########################################################
 # Methods and Functions (KEYWORD2)
 ########################################################
+
+#Limits
+Min	KEYWORD2
+Max KEYWORD2
 
 #Logger
 
