@@ -1,5 +1,5 @@
 /*
-	InterruptsExternalExtender.h - Macros library for Simple Arduino Framework
+	Logger.ino - Macros library for Simple Arduino Framework
 	Copyright (c) 2013 Gregory Linschitz.  All right reserved.
 
 	This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 
 	Changelog:
 
+		2014-01-08	Adedd INIT_SERIAL_AND_ATTACH_LOGGER & LOG_EMPTY_LINE
 		2013-12-28	Initial version
 
 */
@@ -37,41 +38,38 @@
 //  If you need customize module name you should declare LOG_MODULE
 //
 #define LOG_LEVEL eTRACE
-#define LOG_MODULE "TEST"
+#define LOG_MODULE "EXAMPLE"
 #include "Logger.h"
 
 
 void setup()
 {
-  Serial.begin( 9600 );
-  ATTACH_LOGGER_TO_SERIAL();
+	INIT_SERIAL_AND_ATTACH_LOGGER( 115200 );
 }
 
 void loop()
 {
-  FATAL( "Internal code of this level is %d",  eFATAL );
-  CRITICAL( "Internal code of this level is %d",  eCRITICAL );
-  ERROR( "Internal code of this level is %d",  eERROR );
-  WARNING( "Internal code of this level is %d",  eWARNING );
-  INFO( "Internal code of this level is %d",  eINFO );
-  DEBUG( "Internal code of this level is %d",  eDEBUG );
-  DEEP( "Internal code of this level is %d",  eDEEP );
-  TRACE( "Internal code of this level is %d",  eTRACE );
+	FATAL( "Internal code of this level is %d",  eFATAL );
+	CRITICAL( "Internal code of this level is %d",  eCRITICAL );
+	ERROR( "Internal code of this level is %d",  eERROR );
+	WARNING( "Internal code of this level is %d",  eWARNING );
+	INFO( "Internal code of this level is %d",  eINFO );
+	DEBUG( "Internal code of this level is %d",  eDEBUG );
+	DEEP( "Internal code of this level is %d",  eDEEP );
+	TRACE( "Internal code of this level is %d",  eTRACE );
   
-  Serial.println( "" );  Serial.println( "" );
-  Logger::SetLogLevel( eWARNING );
+	LOG_EMPTY_LINE();  LOG_EMPTY_LINE(); Logger::SetLogLevel( eWARNING );
 
-  FATAL( "Internal code of this level is %d",  eFATAL );
-  CRITICAL( "Internal code of this level is %d",  eCRITICAL );
-  ERROR( "Internal code of this level is %d",  eERROR );
-  WARNING( "Internal code of this level is %d",  eWARNING );
-  INFO( "Internal code of this level is %d",  eINFO );
-  DEBUG( "Internal code of this level is %d",  eDEBUG );
-  DEEP( "Internal code of this level is %d",  eDEEP );
-  TRACE( "Internal code of this level is %d",  eTRACE );
+	FATAL( "Internal code of this level is %d",  eFATAL );
+	CRITICAL( "Internal code of this level is %d",  eCRITICAL );
+	ERROR( "Internal code of this level is %d",  eERROR );
+	WARNING( "Internal code of this level is %d",  eWARNING );
+	INFO( "Internal code of this level is %d",  eINFO );
+	DEBUG( "Internal code of this level is %d",  eDEBUG );
+	DEEP( "Internal code of this level is %d",  eDEEP );
+	TRACE( "Internal code of this level is %d",  eTRACE );
   
-  Serial.println( "" );  Serial.println( "" );
-  Logger::SetLogLevel( eTRACE );
+	LOG_EMPTY_LINE();  LOG_EMPTY_LINE(); Logger::SetLogLevel( eTRACE );
 
-  delay( 1000 );
+	delay( 1000 );
 }

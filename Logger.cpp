@@ -63,6 +63,7 @@ namespace Logger
 		//
 		switch( level )
 		{
+			case eEMPTY:	levelStr = "";			break;
 			case eFATAL:	levelStr = "FATAL";		break;
 			case eCRITICAL:	levelStr = "CRITICAL";	break;
 			case eERROR:	levelStr = "ERROR";		break;
